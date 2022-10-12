@@ -5,7 +5,9 @@ USERNAME=$(whoami)
 VERSION=$( lsb_release -a | grep 'Distributor ID:' | awk -F 'Distributor ID:' '{print $2}')
 
 if [ VERSION == "Kali" ]; then
-	
+	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages?token=GHSAT0AAAAAABZXNIFG5YKIXQLR4NUJCM7YY2GD7FQ -O /home/$USERNAME/kali-packages
+	PACKAGES="/home/$USERNAME/kali-packages"
+fi
 	
 
 # Functions
@@ -24,22 +26,6 @@ function check_if_run_before {
 # Update System
 function update {
     sudo apt-get update && sudo apt-get upgrade -y
-}
-
-# Check for existing packages and installing the ones I want
-function check_installed_packages {
-    # Check for existing packages
-	if [ ! -f /home/$USERNAME/.packages ]; then
-		touch /home/$USERNAME/.packages
-		touch /home/$USERNAME/.existing
-	fi
-    packages="/home/$USERNAME/.packages"
-    existing="/home/$USERNAME/.existing"
-
-    apt list --installed >> $packages
-    sed -i '/Listing.../d' $packages
-    awk -F '/' '{print $1}' $packages >> $existing
-    rm $packages
 }
 
 # Install Pentest Tools
@@ -108,6 +94,9 @@ function install_pentest_tools {
 
 # Configure System
 function config_system {
+	# Install needed applications.
+	sudo apt-get install $(cat PACKAGES) -y
+
     # Set up Vundle for VIM
     echo "Setting up VIM plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
