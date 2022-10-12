@@ -2,6 +2,11 @@
 
 # Global Var
 USERNAME=$(whoami)
+VERSION=$( lsb_release -a | grep 'Distributor ID:' | awk -F 'Distributor ID:' '{print $2}')
+
+if [ VERSION == "Kali" ]; then
+	
+	
 
 # Functions
 # Check if this script has been run before
@@ -12,7 +17,7 @@ function check_if_run_before {
     else
         echo "This script has not been run before. Running setup."
         check_installed_packages
-        touch ~/.first_run
+        touch /home/$USERNAME/.first_run
     fi
 }
 
@@ -24,6 +29,10 @@ function update {
 # Check for existing packages and installing the ones I want
 function check_installed_packages {
     # Check for existing packages
+	if [ ! -f /home/$USERNAME/.packages ]; then
+		touch /home/$USERNAME/.packages
+		touch /home/$USERNAME/.existing
+	fi
     packages="/home/$USERNAME/.packages"
     existing="/home/$USERNAME/.existing"
 
