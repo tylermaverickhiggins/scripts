@@ -8,7 +8,7 @@ echo "Are you installing a Kali system? y/n: "
 read response
 if [ $response == 'y' ] || [ $response == 'Y' ]; then
 	VERSION="kali"
-	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages?token=GHSAT0AAAAAABZXNIFG5YKIXQLR4NUJCM7YY2GD7FQ -O /home/$USERNAME/kali-packages
+	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
 	PENTEST=true
 fi
@@ -22,8 +22,8 @@ function check_if_run_before {
         update
     else
         echo "This script has not been run before. Running setup."
+		touch /home/$USERNAME/.first_run
         config_system
-        touch /home/$USERNAME/.first_run
     fi
 }
 
@@ -192,7 +192,7 @@ sleep 5
 github_ssh_check
 
 mkdir ~/.config/terminator
-wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/config?token=GHSAT0AAAAAABZXNIFHDAZA4SMNOC52G2PSY2LGHFQ -O ~/.config/terminator/config
+wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/config -O ~/.config/terminator/config
 
 echo "Final System Update and Upgrade with autoremove"
 sleep 15
