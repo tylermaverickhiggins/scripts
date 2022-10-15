@@ -2,10 +2,12 @@
 
 # Global Var
 USERNAME=$(whoami)
-VERSION=$( lsb_release -a | grep 'Distributor ID:' | awk -F 'Distributor ID:' '{print $2}')
 PENTEST=false
 
-if [ VERSION == "Kali" ]; then
+echo "Are you installing a Kali system? y/n: "
+read response
+if [ $response == 'y' ] || [ $response == 'Y' ]; then
+	VERSION="kali"
 	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages?token=GHSAT0AAAAAABZXNIFG5YKIXQLR4NUJCM7YY2GD7FQ -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
 	PENTEST=true
