@@ -3,10 +3,12 @@
 # Global Var
 USERNAME=$(whoami)
 VERSION=$( lsb_release -a | grep 'Distributor ID:' | awk -F 'Distributor ID:' '{print $2}')
+PENTEST=false
 
 if [ VERSION == "Kali" ]; then
 	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages?token=GHSAT0AAAAAABZXNIFG5YKIXQLR4NUJCM7YY2GD7FQ -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
+	PENTEST=true
 fi
 	
 
@@ -18,7 +20,7 @@ function check_if_run_before {
         update
     else
         echo "This script has not been run before. Running setup."
-        check_installed_packages
+        config_system
         touch /home/$USERNAME/.first_run
     fi
 }
@@ -95,7 +97,31 @@ function install_pentest_tools {
 # Configure System
 function config_system {
 	# Install needed applications.
-	sudo apt-get install $(cat PACKAGES) -y
+	cd ~/
+	# Update and Upgrade system.
+	echo "Running a full system upgrade"
+	sudo apt update && sudo apt upgrade -y
+
+	# Installing requested packages
+	echo "Installing requested packages from the Packages file."
+	sleep 10
+	xargs -a $PACKAGES sudo apt install -y
+	echo "Finished installing required packages"
+	sleep 10
+
+	# Download and install oh-my-zsh.
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	echo "Now Installing Sublime Text Editor"
+
+	# Add sublime text repo and install Sublime Text.
+	wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - # Add sublime text repo key
+	sudo apt install apt-transport-https
+	echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list  # Add sublime text repo
+	sudo apt update && sudo apt install sublime-text -y
+
+	# Install bpytop
+	echo "Installing bpytop python package"
+	sudo python3 -m pip install bpytop --upgrade
 
     # Set up Vundle for VIM
     echo "Setting up VIM plugins"
@@ -114,8 +140,52 @@ function config_system {
     git clone https://github.com/zsh-users/zsh-history-substring-search ~/.oh-my-zsh/custom/plugins/zsh-history-substring-search # Install implementation of the Fish shell's history search feature
 
     # Setup git identity
-    git config --global user.email "tylermhiggins@outlook.com"
+    git config --global user.email "tylermhiggins@tutanota.com"
     git config --global user.name "Tyler Higgins"
 }
 
+function github_ssh_check() {
+	# Checking gitlab ssh connection
+	echo "Have you added the current ssh key to gitlab y/n: "
+	read response
+	if [ $response == 'y' ] || [ $response == 'Y' ]
+	then
+    echo "Testing ssh connection..."
+    ssh -T git@github.com
+
+    echo "Did you get a message with your username after the connection test? y/n"
+    read check
+    if [ $check == 'y' ] || [ $check == 'Y' ]
+    then
+		echo "Now pulling down dotfiles."
+		git clone git@github.com:tylermaverickhiggins/dotfiles.git
+		cd dotfiles
+		./.make.sh
+		cd ~/
+
+		if [$PENTEST == true]; then
+			# Pull down TryHackMe repo
+			echo "Now pulling down TryHackMe Room Repo."
+			cd ~/Documents
+			git clone git@github.com:tylermaverickhiggins/tryhackme.git
+		fi
+    else
+		exit 0
+		fi
+	else
+		exit 0
+	fi
+}
+
+echo "Now Checking to see if this script has been run before."
 check_if_run_before
+
+if [$PENTEST == true]; then
+	echo "Now installing pentest tools"
+	install_pentest_tools
+fi
+sleep 5
+
+github_ssh_check
+
+mkdir ~/.config/terminator
