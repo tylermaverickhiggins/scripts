@@ -158,6 +158,7 @@ function github_ssh_check() {
     if [ $check == 'y' ] || [ $check == 'Y' ]
     then
 		echo "Now pulling down dotfiles."
+		cd ~/
 		git clone git@github.com:tylermaverickhiggins/dotfiles.git
 		cd dotfiles
 		./.make.sh
@@ -189,3 +190,9 @@ sleep 5
 github_ssh_check
 
 mkdir ~/.config/terminator
+wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/config?token=GHSAT0AAAAAABZXNIFHDAZA4SMNOC52G2PSY2LGHFQ -O ~/.config/terminator/config
+
+echo "Final System Update and Upgrade with autoremove"
+sleep 15
+cd ~
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
