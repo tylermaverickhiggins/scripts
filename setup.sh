@@ -198,3 +198,6 @@ echo "Final System Update and Upgrade with autoremove"
 sleep 15
 cd ~
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+
+echo "Rebooting"
+sudo reboot
