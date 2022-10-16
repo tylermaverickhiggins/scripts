@@ -2,17 +2,24 @@
 
 # Global Var
 export USERNAME=$(whoami)
-export PENTEST='false'
 
-echo "Are you installing a Kali system? y/n: "
-read response
-if [ $response == 'y' ] || [ $response == 'Y' ]; then
-	VERSION="kali"
-	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
-	PACKAGES="/home/$USERNAME/kali-packages"
-	PENTEST='true'
-	echo "PENTEST = $PENTEST"
-fi
+function install_kali() {
+	echo "Are you installing a Kali system? y/n: "
+	read response
+	if [ $response == 'y' ] || [ $response == 'Y' ]; then
+		wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
+		PACKAGES="/home/$USERNAME/kali-packages"
+		install_pentest_tools
+
+		# Pull down TryHackMe repo
+		echo "Now pulling down TryHackMe Room Repo."
+		cd ~/Documents
+		git clone git@github.com:tylermaverickhiggins/tryhackme.git
+	else
+		exit 0
+	fi
+}
+
 	
 
 # Functions
@@ -28,10 +35,8 @@ function check_if_run_before {
 		echo "Now Configuring System"
         config_system
 		sleep 5
-
 		github_ssh_check
-
-		echo
+		install_kali
     fi
 }
 
@@ -159,34 +164,25 @@ function github_ssh_check() {
 	# Checking gitlab ssh connection
 	echo "Have you added the current ssh key to gitlab y/n: "
 	read response
-	if [ $response == 'y' ] || [ $response == 'Y' ]
-	then
-    echo "Testing ssh connection..."
-    ssh -T git@github.com
+	if [ $response == 'y' ] || [ $response == 'Y' ]; then
+		echo "Testing ssh connection..."
+		ssh -T git@github.com
 
-    echo "Did you get a message with your username after the connection test? y/n"
-    read check
-    if [ $check == 'y' ] || [ $check == 'Y' ]
-    then
-		echo "Now pulling down dotfiles."
-		cd ~/
-		git clone git@github.com:tylermaverickhiggins/dotfiles.git
-		cd dotfiles
-		chmod +x .make.sh
-		./.make.sh
-		cd ~/
+		echo "Did you get a message with your username after the connection test? y/n"
+		read check
+		if [ $check == 'y' ] || [ $check == 'Y' ]; then
+			echo "Now pulling down dotfiles."
+			cd ~/
+			git clone git@github.com:tylermaverickhiggins/dotfiles.git
+			cd dotfiles
+			chmod +x .make.sh
+			./.make.sh
+			cd ~/
 
-		echo "PENTEST = $PENTEST"
-		sleep 10
-
-		if [$PENTEST == 'true']; then
-			# Pull down TryHackMe repo
-			echo "Now pulling down TryHackMe Room Repo."
-			cd ~/Documents
-			git clone git@github.com:tylermaverickhiggins/tryhackme.git
-		fi
-    else
-		exit 0
+			echo "PENTEST = $PENTEST"
+			sleep 10
+		else
+			exit 0
 		fi
 	else
 		exit 0
@@ -195,15 +191,6 @@ function github_ssh_check() {
 
 echo "Now Checking to see if this script has been run before."
 check_if_run_before
-
-
-echo "PENTEST = $PENTEST"
-sleep 10
-if [$PENTEST == 'true']; then
-	echo "Now installing pentest tools"
-	install_pentest_tools
-fi
-sleep 5
 
 mkdir ~/.config/terminator
 wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/config -O ~/.config/terminator/config
