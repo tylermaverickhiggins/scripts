@@ -2,7 +2,7 @@
 
 # Global Var
 export USERNAME=$(whoami)
-export PENTEST=false
+export PENTEST='false'
 
 echo "Are you installing a Kali system? y/n: "
 read response
@@ -10,7 +10,8 @@ if [ $response == 'y' ] || [ $response == 'Y' ]; then
 	VERSION="kali"
 	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
-	PENTEST=true
+	PENTEST='true'
+	echo "PENTEST = $PENTEST"
 fi
 	
 
@@ -109,7 +110,7 @@ function config_system {
 	cd ~/
 	# Update and Upgrade system.
 	echo "Running a full system upgrade"
-	sudo apt update && sudo apt upgrade -y
+	sudo apt update && sudo apt upgrade -y && sudo apt dist-upgrade -y && sudo apt autoremove -y
 
 	# Installing requested packages
 	echo "Installing requested packages from the Packages file."
@@ -175,7 +176,10 @@ function github_ssh_check() {
 		./.make.sh
 		cd ~/
 
-		if [$PENTEST]; then
+		echo "PENTEST = $PENTEST"
+		sleep 10
+
+		if [$PENTEST == 'true']; then
 			# Pull down TryHackMe repo
 			echo "Now pulling down TryHackMe Room Repo."
 			cd ~/Documents
@@ -192,7 +196,10 @@ function github_ssh_check() {
 echo "Now Checking to see if this script has been run before."
 check_if_run_before
 
-if [$PENTEST]; then
+
+echo "PENTEST = $PENTEST"
+sleep 10
+if [$PENTEST == 'true']; then
 	echo "Now installing pentest tools"
 	install_pentest_tools
 fi
