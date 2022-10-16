@@ -2,6 +2,7 @@
 
 # Global Var
 USERNAME=$(whoami)
+PENTEST=0
 
 echo "Are you installing a Kali system? y/n: "
 read response
@@ -9,7 +10,7 @@ if [ $response == 'y' ] || [ $response == 'Y' ]; then
 	VERSION="kali"
 	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
-	PENTEST='true'
+	PENTEST=1
 fi
 	
 
@@ -22,13 +23,20 @@ function check_if_run_before {
     else
         echo "This script has not been run before. Running setup."
 		touch /home/$USERNAME/.first_run
+
+		echo "Now Configuring System"
         config_system
+		sleep 5
+
+		github_ssh_check
+
+		echo
     fi
 }
 
 # Update System
 function update {
-    sudo apt-get update && sudo apt-get upgrade -y
+    sudo apt-get update && sudo apt-get upgrade -y && sudo reboot
 }
 
 # Install Pentest Tools
@@ -126,6 +134,7 @@ function config_system {
 
     # Set up Vundle for VIM
     echo "Setting up VIM plugins"
+	sleep 5
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim +PluginInstall +qall
 
@@ -166,7 +175,7 @@ function github_ssh_check() {
 		./.make.sh
 		cd ~/
 
-		if [$PENTEST == 'true']; then
+		if [$PENTEST == 1]; then
 			# Pull down TryHackMe repo
 			echo "Now pulling down TryHackMe Room Repo."
 			cd ~/Documents
@@ -183,13 +192,11 @@ function github_ssh_check() {
 echo "Now Checking to see if this script has been run before."
 check_if_run_before
 
-if [$PENTEST == 'true']; then
+if [$PENTEST == 1]; then
 	echo "Now installing pentest tools"
 	install_pentest_tools
 fi
 sleep 5
-
-github_ssh_check
 
 mkdir ~/.config/terminator
 wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/config -O ~/.config/terminator/config
