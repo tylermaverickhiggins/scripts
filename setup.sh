@@ -33,10 +33,10 @@ function check_if_run_before {
 		touch /home/$USERNAME/.first_run
 
 		echo "Now Configuring System"
+		install_kali
         config_system
 		sleep 5
 		github_ssh_check
-		install_kali
     fi
 }
 
@@ -129,10 +129,10 @@ function config_system {
 	echo "Now Installing Sublime Text Editor"
 
 	# Add sublime text repo and install Sublime Text.
-	wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - # Add sublime text repo key
-	sudo apt install apt-transport-https
-	echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list  # Add sublime text repo
-	sudo apt update && sudo apt install sublime-text -y
+	wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg
+	echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+
+	sudo apt update && sudo apt install apt-transport-https -y &&  sudo apt install sublime-text -y
 
 	# Install bpytop
 	echo "Installing bpytop python package"
@@ -178,9 +178,6 @@ function github_ssh_check() {
 			chmod +x .make.sh
 			./.make.sh
 			cd ~/
-
-			echo "PENTEST = $PENTEST"
-			sleep 10
 		else
 			exit 0
 		fi
