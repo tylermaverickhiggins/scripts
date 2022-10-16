@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Global Var
-USERNAME=$(whoami)
-PENTEST=0
+export USERNAME=$(whoami)
+export PENTEST=false
 
 echo "Are you installing a Kali system? y/n: "
 read response
@@ -10,7 +10,7 @@ if [ $response == 'y' ] || [ $response == 'Y' ]; then
 	VERSION="kali"
 	wget https://raw.githubusercontent.com/tylermaverickhiggins/scripts/master/kali-packages -O /home/$USERNAME/kali-packages
 	PACKAGES="/home/$USERNAME/kali-packages"
-	PENTEST=1
+	PENTEST=true
 fi
 	
 
@@ -175,7 +175,7 @@ function github_ssh_check() {
 		./.make.sh
 		cd ~/
 
-		if [$PENTEST == 1]; then
+		if [$PENTEST]; then
 			# Pull down TryHackMe repo
 			echo "Now pulling down TryHackMe Room Repo."
 			cd ~/Documents
@@ -192,7 +192,7 @@ function github_ssh_check() {
 echo "Now Checking to see if this script has been run before."
 check_if_run_before
 
-if [$PENTEST == 1]; then
+if [$PENTEST]; then
 	echo "Now installing pentest tools"
 	install_pentest_tools
 fi
