@@ -29,12 +29,12 @@ function check_if_run_before {
         echo "This script has already been run. Checking for updates."
         update
     else
-        echo "This script has not been run before. Running setup."
+		echo "This script has not been run before. Running setup."
 		touch /home/$USERNAME/.first_run
 
 		echo "Now Configuring System"
 		install_kali
-        config_system
+		config_system
 		sleep 5
 		github_ssh_check
     fi
