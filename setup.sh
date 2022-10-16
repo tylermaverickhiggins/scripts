@@ -33,10 +33,11 @@ function check_if_run_before {
 		touch /home/$USERNAME/.first_run
 
 		echo "Now Configuring System"
+		github_ssh_check
 		install_kali
 		config_system
 		sleep 5
-		github_ssh_check
+		
     fi
 }
 
