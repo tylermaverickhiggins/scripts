@@ -100,6 +100,12 @@ function install_pentest_tools {
 	python -m pip install -r ~/pentest/yarGen/requirements.txt
 	git clone https://github.com/InQuest/awesome-yara.git
 	python -m pip install -r ~/pentest/awesome-yara/requirements.txt
+	cd ~/pentest
+	wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb -O rustscan.deb
+	sudo dpkg -i rustscan_2.0.1_amd64.deb
+
+	git clone https://github.com/21y4d/nmapAutomator.git
+	sudo ln -s $(pwd)/nmapAutomator/nmapAutomator.sh /usr/local/bin/
 
     # Download Complete Seclists Wordlists.
     cd /usr/share/wordlists
