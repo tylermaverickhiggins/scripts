@@ -114,6 +114,11 @@ function install_pentest_tools {
     cd ~/pentest
 	# Install evil-winrm
 	sudo gem install evil-winrm
+
+	git clone https://github.com/t3l3machus/hoaxshell
+	cd ./hoaxshell
+	sudo pip3 install -r requirements.txt
+	chmod +x hoaxshell.py
 }
 
 # Configure System
